@@ -3704,6 +3704,10 @@ outcomesContainer.appendChild(square);
             form.reset();
             form.querySelector('input').disabled = !isChangeAllowed;
             form.querySelector('button').disabled = !isChangeAllowed;
+        const infoElement = document.getElementById(`${type.toLowerCase()}ChangeInfo`);
+            if (infoElement) {
+                infoElement.style.color = infoColor;
+            }
             document.getElementById(`${type.toLowerCase()}ChangeInfo`).style.color = infoColor;
         });
         document.getElementById('changePasswordForm').reset();
