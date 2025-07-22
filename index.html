@@ -1395,7 +1395,12 @@
         <div id="mobile-leaderboard-modal" class="modal-content w-full max-w-xl p-0">
             <div class="content-overlay">
                 <button class="modal-close-button" data-close="tabelaModal"><i data-lucide="x"></i></button>
-                <h2 class="text-2xl font-bold text-white mb-4 text-center">Tabela</h2>
+                <div class="text-center mb-4">
+    <h2 class="text-2xl font-bold text-white leading-tight">
+        <span class="gradient-title">Kockari Pobedjuju</span><span class="block">LIGA</span>
+    </h2>
+    <p id="mobileLeaderboardRoundInfo" class="text-zinc-400 text-sm mt-1">Učitavanje...</p>
+</div>
                 <div id="mobile-table-wrapper" class="rounded-lg border border-zinc-700 mt-4">
                      <table class="w-full text-sm" style="table-layout: auto;">
                         <thead>
@@ -1714,7 +1719,7 @@
 
         if (now < startDate) {
              const roundDisplay = document.getElementById('currentRound');
-             if(roundDisplay) roundDisplay.innerHTML = `Liga počinje ${formatDate(settings.datumPocetkaSezone)}`;
+             if(roundDisplay) roundDisplay.innerHTML = `Sezona počinje ${formatDate(settings.datumPocetkaSezone)}`;
              currentSeasonInfo.isOffSeason = true;
              currentSeasonInfo.round = 1;
              return;
@@ -1848,7 +1853,15 @@
         
         leaderboardSearch.addEventListener('input', handleLeaderboardSearch);
 
-        document.getElementById('mobileTabelaButton').addEventListener('click', () => openModal(tabelaModal));
+       document.getElementById('mobileTabelaButton').addEventListener('click', () => {
+    const roundInfoEl = document.getElementById('mobileLeaderboardRoundInfo');
+    const currentRoundDesktopEl = document.getElementById('currentRound');
+    if (roundInfoEl && currentRoundDesktopEl) {
+        // Kopira tekst iz već postojećeg elementa na desktop verziji
+        roundInfoEl.innerHTML = currentRoundDesktopEl.innerHTML;
+    }
+    openModal(tabelaModal);
+});
         document.getElementById('mobileStatistikaButton').addEventListener('click', () => openModal(statistikaLigeModal));
 
         document.getElementById('forgotPasswordLink').addEventListener('click', handleForgotPasswordRequest);
