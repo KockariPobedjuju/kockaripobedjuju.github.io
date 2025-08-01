@@ -2180,8 +2180,16 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
         });
 
         const sortedUsers = usersWithStats.sort((a, b) => {
-            if (a.isDisqualified && !b.isDisqualified) return 1;
-            if (!a.isDisqualified && b.isDisqualified) return -1;
+            const aIsRanked = (a.correctBets > 0 || a.incorrectBets > 0) && !a.isDisqualified;
+            const bIsRanked = (b.correctBets > 0 || b.incorrectBets > 0) && !b.isDisqualified;
+
+            if (aIsRanked && !bIsRanked) {
+                return -1;
+            }
+            if (!aIsRanked && bIsRanked) {
+                return 1;
+            }
+
             return parseFloat(b.netProfitLoss) - parseFloat(a.netProfitLoss);
         });
 
@@ -4033,3 +4041,4 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
