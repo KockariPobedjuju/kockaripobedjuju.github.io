@@ -626,10 +626,18 @@
             padding: 4px 0;
         }
         
-        #mobile-table-wrapper {
-            overflow-x: auto;
-        }
-        
+       #mobile-table-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 574px;
+}
+        #tabelaModal th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-image: linear-gradient(to bottom, #4a5568, #2d3748);
+}
+    
         .extended-col {
             display: table-cell;
         }
@@ -4041,4 +4049,5 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
 
