@@ -626,18 +626,10 @@
             padding: 4px 0;
         }
         
-       #mobile-table-wrapper {
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: 498px;
-}
-        #tabelaModal th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-image: linear-gradient(to bottom, #4a5568, #2d3748);
-}
-    
+        #mobile-table-wrapper {
+            overflow-x: auto;
+        }
+        
         .extended-col {
             display: table-cell;
         }
@@ -2819,25 +2811,12 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
     }
 
     let pairsHtml = '';
-    const safeParse = (data) => {
-    if (Array.isArray(data)) return data; // Ako je već niz, super.
-    if (typeof data === 'string') { // Ako je tekst...
-        try {
-            const parsed = JSON.parse(data); // ...pokušaj da ga pretvoriš u niz.
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            return []; // Ako ne uspe, vrati prazan niz.
-        }
-    }
-    return []; // Ako nije ni niz ni tekst, vrati prazan niz.
-};
-
-const parovi = safeParse(ticket.Parovi);
-const tipovi = safeParse(ticket.Tipovi);
-const kvote = safeParse(ticket.Kvote);
-const vremena = safeParse(ticket.Vreme);
-const rezultati = safeParse(ticket.Rezultati);
-const statusiParova = safeParse(ticket.StatusParova);
+    const parovi = Array.isArray(ticket.Parovi) ? ticket.Parovi : [];
+    const tipovi = Array.isArray(ticket.Tipovi) ? ticket.Tipovi : [];
+    const kvote = Array.isArray(ticket.Kvote) ? ticket.Kvote : [];
+    const vremena = Array.isArray(ticket.Vreme) ? ticket.Vreme : [];
+    const rezultati = Array.isArray(ticket.Rezultati) ? ticket.Rezultati : [];
+    const statusiParova = Array.isArray(ticket.StatusParova) ? ticket.StatusParova : [];
 
     for (let i = 0; i < parovi.length; i++) {
         const vreme = vremena[i] || '';
@@ -2991,25 +2970,25 @@ const statusiParova = safeParse(ticket.StatusParova);
         if (isSmallScreen) {
             // Logika za prikaz na sredini kartice "Statistika lige"
             const cardElement = event.currentTarget.closest('.card, .modal-content');
-            if (!cardElement) return; 
+            if (!cardElement) return; // Ako ne nađe karticu, neće uraditi ništa
 
             document.body.appendChild(popover);
-            popover.style.position = 'fixed'; 
+            popover.style.position = 'fixed'; // Koristi 'fixed' da bi ignorisalo skrolovanje
 
             const cardRect = cardElement.getBoundingClientRect();
-            
+            // Računa centar kartice
             const centerX = cardRect.left + cardRect.width / 2;
             const centerY = cardRect.top + cardRect.height / 2;
 
-            
+            // Postavlja tiket na izračunati centar
             popover.style.left = `${centerX}px`;
             popover.style.top = `${centerY}px`;
-            popover.style.transform = 'translate(-50%, -50%)'; 
+            popover.style.transform = 'translate(-50%, -50%)'; // Fina korekcija za centriranje
 
             popover.classList.add('show');
 
-            
-            setTimeout(() => { 
+            // Logika za zatvaranje tiketa klikom van njega
+            setTimeout(() => { // setTimeout da ne bi uhvatio isti klik koji je otvorio tiket
                 const closeHandler = (e) => {
                     if (!popover.contains(e.target) && !target.contains(e.target)) {
                         popover.classList.remove('show');
@@ -3020,16 +2999,17 @@ const statusiParova = safeParse(ticket.StatusParova);
             }, 0);
 
         } else {
-            // ISPRAVLJENA DESKTOP VERZIJA
+            // NORMALNA DESKTOP VERZIJA - OSTAJE NETAKNUTA
             document.body.appendChild(popover);
             const targetRect = target.getBoundingClientRect();
             popover.style.position = 'absolute';
             popover.style.left = `${targetRect.left + targetRect.width / 2}px`;
             popover.style.top = `${targetRect.top}px`;
-            // LINIJA KOJA JE BILA OVDE JE OBRISANA
+            popover.style.transform = 'translateX(-50%) translateY(-100%) translateY(-10px)';
             popover.classList.add('show');
         }
     }
+
     function hideDailyWinPopover() {
         const popover = document.getElementById('dailyWinPopover');
         dailyWinPopoverTimeout = setTimeout(() => {
@@ -4061,9 +4041,3 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
-
-
-
-
-
-
