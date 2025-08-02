@@ -2961,6 +2961,13 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
         const popover = document.getElementById('dailyWinPopover');
         if (!popover) return;
 
+        // ---- KLJUČNA ISPRAVKA JE OVDE ----
+        // Dodajemo event listenere na sam tiket (popover).
+        // Ovo omogućava da miš pređe sa teksta na tiket bez da se on sakrije.
+        popover.onmouseenter = () => clearTimeout(dailyWinPopoverTimeout);
+        popover.onmouseleave = hideDailyWinPopover;
+        // ---- KRAJ ISPRAVKE ----
+
         const ticket = JSON.parse(ticketData);
         popover.innerHTML = generateTicketPopoverHTML(ticket);
         lucide.createIcons();
@@ -2999,7 +3006,7 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
             }, 0);
 
         } else {
-            // NORMALNA DESKTOP VERZIJA - OSTAJE NETAKNUTA
+            // NORMALNA DESKTOP VERZIJA
             document.body.appendChild(popover);
             const targetRect = target.getBoundingClientRect();
             popover.style.position = 'absolute';
@@ -3009,7 +3016,6 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
             popover.classList.add('show');
         }
     }
-
     function hideDailyWinPopover() {
         const popover = document.getElementById('dailyWinPopover');
         dailyWinPopoverTimeout = setTimeout(() => {
@@ -4041,3 +4047,4 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
