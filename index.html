@@ -2819,12 +2819,25 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
     }
 
     let pairsHtml = '';
-    const parovi = Array.isArray(ticket.Parovi) ? ticket.Parovi : [];
-    const tipovi = Array.isArray(ticket.Tipovi) ? ticket.Tipovi : [];
-    const kvote = Array.isArray(ticket.Kvote) ? ticket.Kvote : [];
-    const vremena = Array.isArray(ticket.Vreme) ? ticket.Vreme : [];
-    const rezultati = Array.isArray(ticket.Rezultati) ? ticket.Rezultati : [];
-    const statusiParova = Array.isArray(ticket.StatusParova) ? ticket.StatusParova : [];
+    const safeParse = (data) => {
+    if (Array.isArray(data)) return data; // Ako je već niz, super.
+    if (typeof data === 'string') { // Ako je tekst...
+        try {
+            const parsed = JSON.parse(data); // ...pokušaj da ga pretvoriš u niz.
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return []; // Ako ne uspe, vrati prazan niz.
+        }
+    }
+    return []; // Ako nije ni niz ni tekst, vrati prazan niz.
+};
+
+const parovi = safeParse(ticket.Parovi);
+const tipovi = safeParse(ticket.Tipovi);
+const kvote = safeParse(ticket.Kvote);
+const vremena = safeParse(ticket.Vreme);
+const rezultati = safeParse(ticket.Rezultati);
+const statusiParova = safeParse(ticket.StatusParova);
 
     for (let i = 0; i < parovi.length; i++) {
         const vreme = vremena[i] || '';
@@ -4049,6 +4062,7 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
 
 
 
