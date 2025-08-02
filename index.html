@@ -2954,42 +2954,66 @@ if (currentUser && currentUser.ProfilnaSlika && currentUser.ProfilnaSlika.starts
     
     let dailyWinPopoverTimeout;
     function showDailyWinPopover(event) {
-        const target = event.currentTarget;
-        const ticketData = target.dataset.ticketData;
-        if (!ticketData) return;
+    const target = event.currentTarget;
+    const ticketData = target.dataset.ticketData;
+    if (!ticketData) return;
 
-        event.stopPropagation();
-        clearTimeout(dailyWinPopoverTimeout);
+    event.stopPropagation();
+    clearTimeout(dailyWinPopoverTimeout);
 
-        const popover = document.getElementById('dailyWinPopover');
-        if (!popover) return;
+    const popover = document.getElementById('dailyWinPopover');
+    if (!popover) return;
+    
+    // Ovo omogućava da miš pređe sa teksta na tiket bez da se on sakrije
+    popover.onmouseenter = () => clearTimeout(dailyWinPopoverTimeout);
+    popover.onmouseleave = hideDailyWinPopover;
 
-        const ticket = JSON.parse(ticketData);
-        popover.innerHTML = generateTicketPopoverHTML(ticket);
-        lucide.createIcons();
+    const ticket = JSON.parse(ticketData);
+    popover.innerHTML = generateTicketPopoverHTML(ticket);
+    lucide.createIcons();
 
-        const isSmallScreen = window.innerWidth < 1024;
+    const isSmallScreen = window.innerWidth < 1024;
 
-        if (isSmallScreen) {
-            // Logika za prikaz na sredini kartice "Statistika lige"
-            const cardElement = event.currentTarget.closest('.card, .modal-content');
-            if (!cardElement) return; // Ako ne nađe karticu, neće uraditi ništa
+    if (isSmallScreen) {
+        // Logika za mobilni prikaz
+        const cardElement = event.currentTarget.closest('.card, .modal-content');
+        if (!cardElement) return;
 
-            document.body.appendChild(popover);
-            popover.style.position = 'fixed'; // Koristi 'fixed' da bi ignorisalo skrolovanje
+        document.body.appendChild(popover);
+        popover.style.position = 'fixed'; 
 
-            const cardRect = cardElement.getBoundingClientRect();
-            // Računa centar kartice
-            const centerX = cardRect.left + cardRect.width / 2;
-            const centerY = cardRect.top + cardRect.height / 2;
+        const cardRect = cardElement.getBoundingClientRect();
+        const centerX = cardRect.left + cardRect.width / 2;
+        const centerY = cardRect.top + cardRect.height / 2;
 
-            // Postavlja tiket na izračunati centar
-            popover.style.left = `${centerX}px`;
-            popover.style.top = `${centerY}px`;
-            popover.style.transform = 'translate(-50%, -50%)'; // Fina korekcija za centriranje
+        popover.style.left = `${centerX}px`;
+        popover.style.top = `${centerY}px`;
+        popover.style.transform = 'translate(-50%, -50%)';
 
-            popover.classList.add('show');
+        popover.classList.add('show');
 
+        // Zatvaranje klikom van tiketa
+        setTimeout(() => { 
+            const closeHandler = (e) => {
+                if (!popover.contains(e.target) && !target.contains(e.target)) {
+                    popover.classList.remove('show');
+                    window.removeEventListener('click', closeHandler);
+                }
+            };
+            window.addEventListener('click', closeHandler);
+        }, 0);
+
+    } else {
+        // Desktop verzija
+        document.body.appendChild(popover);
+        const targetRect = target.getBoundingClientRect();
+        popover.style.position = 'absolute';
+        popover.style.left = `${targetRect.left + targetRect.width / 2}px`;
+        popover.style.top = `${targetRect.top}px`;
+        popover.style.transform = 'translateX(-50%) translateY(-100%) translateY(-10px)';
+        popover.classList.add('show');
+    }
+}
             // Logika za zatvaranje tiketa klikom van njega
             setTimeout(() => { // setTimeout da ne bi uhvatio isti klik koji je otvorio tiket
                 const closeHandler = (e) => {
@@ -4044,4 +4068,5 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
 
