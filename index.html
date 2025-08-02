@@ -2972,65 +2972,58 @@ const statusiParova = safeParse(ticket.StatusParova);
     
     let dailyWinPopoverTimeout;
     function showDailyWinPopover(event) {
-        const target = event.currentTarget;
-        const ticketData = target.dataset.ticketData;
-        if (!ticketData) return;
+    console.log("--- Pokrenut showDailyWinPopover ---"); // KORAK 1
 
-        event.stopPropagation();
-        clearTimeout(dailyWinPopoverTimeout);
+    const target = event.currentTarget;
+    const ticketData = target.dataset.ticketData;
 
-        const popover = document.getElementById('dailyWinPopover');
-        if (!popover) return;
+    if (!ticketData) {
+        console.error("GREŠKA: Element nema 'data-ticket-data' atribut. Hover ne može da radi.", target);
+        return;
+    }
+    console.log("KORAK 2: Pronađen 'data-ticket-data' atribut. Sadržaj:", ticketData);
 
-        const ticket = JSON.parse(ticketData);
-        popover.innerHTML = generateTicketPopoverHTML(ticket);
-        lucide.createIcons();
+    event.stopPropagation();
+    clearTimeout(dailyWinPopoverTimeout);
 
-        const isSmallScreen = window.innerWidth < 1024;
-
-        if (isSmallScreen) {
-            // Logika za prikaz na sredini kartice "Statistika lige"
-            const cardElement = event.currentTarget.closest('.card, .modal-content');
-            if (!cardElement) return; // Ako ne nađe karticu, neće uraditi ništa
-
-            document.body.appendChild(popover);
-            popover.style.position = 'fixed'; // Koristi 'fixed' da bi ignorisalo skrolovanje
-
-            const cardRect = cardElement.getBoundingClientRect();
-            // Računa centar kartice
-            const centerX = cardRect.left + cardRect.width / 2;
-            const centerY = cardRect.top + cardRect.height / 2;
-
-            // Postavlja tiket na izračunati centar
-            popover.style.left = `${centerX}px`;
-            popover.style.top = `${centerY}px`;
-            popover.style.transform = 'translate(-50%, -50%)'; // Fina korekcija za centriranje
-
-            popover.classList.add('show');
-
-            // Logika za zatvaranje tiketa klikom van njega
-            setTimeout(() => { // setTimeout da ne bi uhvatio isti klik koji je otvorio tiket
-                const closeHandler = (e) => {
-                    if (!popover.contains(e.target) && !target.contains(e.target)) {
-                        popover.classList.remove('show');
-                        window.removeEventListener('click', closeHandler);
-                    }
-                };
-                window.addEventListener('click', closeHandler);
-            }, 0);
-
-        } else {
-            // NORMALNA DESKTOP VERZIJA - OSTAJE NETAKNUTA
-            document.body.appendChild(popover);
-            const targetRect = target.getBoundingClientRect();
-            popover.style.position = 'absolute';
-            popover.style.left = `${targetRect.left + targetRect.width / 2}px`;
-            popover.style.top = `${targetRect.top}px`;
-            popover.style.transform = 'translateX(-50%) translateY(-100%) translateY(-10px)';
-            popover.classList.add('show');
-        }
+    const popover = document.getElementById('dailyWinPopover');
+    if (!popover) {
+        console.error("GREŠKA: HTML element sa ID-jem 'dailyWinPopover' ne postoji na stranici.");
+        return;
     }
 
+    let ticket;
+    try {
+        ticket = JSON.parse(ticketData);
+        console.log("KORAK 3: Podaci o tiketu uspešno pretvoreni u objekat (JSON.parse). Objekat:", ticket);
+    } catch (error) {
+        console.error("FATALNA GREŠKA: Nije uspelo parsiranje podataka o tiketu! Proverite da li su podaci u Sheetu ispravni.", error);
+        console.error("Problematičan tekstualni podatak je bio:", ticketData);
+        popover.innerHTML = '<div class="p-4 bg-red-800 text-white rounded-lg border border-red-500">Greška u podacima o tiketu.</div>';
+        popover.classList.add('show');
+        return;
+    }
+
+    try {
+        popover.innerHTML = generateTicketPopoverHTML(ticket);
+        console.log("KORAK 4: HTML za popover je uspešno generisan.");
+    } catch (error) {
+        console.error("FATALNA GREŠKA: Desila se greška unutar 'generateTicketPopoverHTML' funkcije.", error);
+        return;
+    }
+    
+    lucide.createIcons();
+
+    // Ostatak koda za pozicioniranje...
+    document.body.appendChild(popover);
+    const targetRect = target.getBoundingClientRect();
+    popover.style.position = 'absolute';
+    popover.style.left = `${targetRect.left + targetRect.width / 2}px`;
+    popover.style.top = `${targetRect.top}px`;
+    popover.style.transform = 'translateX(-50%) translateY(-100%) translateY(-10px)';
+    popover.classList.add('show');
+    console.log("KORAK 5: Popover bi sada trebalo da je vidljiv.");
+}
     function hideDailyWinPopover() {
         const popover = document.getElementById('dailyWinPopover');
         dailyWinPopoverTimeout = setTimeout(() => {
@@ -4062,6 +4055,7 @@ outcomesContainer.appendChild(square);
 </script>
 </body>
 </html>
+
 
 
 
